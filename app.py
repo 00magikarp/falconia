@@ -1,10 +1,18 @@
 import asyncio
 import camera
+import dht
 import sensor
 
 async def start(s: sensor.Sensor):
-    s.start()
+    await s.start()
 
-camera = camera.Camera();
+async def main() -> None:
+    Camera = camera.Camera()
+    DHT = dht.DHT()
 
-asyncio.run(start(camera))
+    sensors: list[sensor.Sensor] = [Camera, DHT]
+    await asyncio.gather(*[start(sensor) for sensor in sensors])
+
+if __name__ == "__main__":
+    asyncio.run(main())
+
