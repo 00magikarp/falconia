@@ -1,5 +1,4 @@
 import time
-import curses
 from adafruit_motorkit import MotorKit
 
 # Initialize the motor hat
@@ -15,36 +14,31 @@ UPDATE_RATE = 0.05  # Update interval (lower = smoother, higher = more responsiv
 motor1_speed = 0.0
 motor2_speed = 0.0
 
-def motor_control(stdscr):
+def motor_control():
     global motor1_speed, motor2_speed
-    curses.cbreak()
-    curses.halfdelay(1)  # Reduce delay for key holds (1 = 100ms)
-    stdscr.nodelay(True)  # Do not block waiting for user input
-    stdscr.keypad(True)
-    stdscr.clear()
-    stdscr.addstr("Use arrow keys to control motors. Press 'q' to exit.\n")
+    print("Use W/A/S/D to control motors. Press 'q' to exit.")
 
     while True:
-        key = stdscr.getch()
+        key = input("Enter command: ")
 
         # Determine target speeds
-        if key == curses.KEY_UP:
+        if key.lower() == 'w':
             target_speed_m1 = MAX_SPEED
             target_speed_m2 = -MAX_SPEED
-        elif key == curses.KEY_DOWN:
+        elif key.lower() == 's':
             target_speed_m1 = -MAX_SPEED
             target_speed_m2 = MAX_SPEED
-        elif key == curses.KEY_LEFT:
+        elif key.lower() == 'a':
             target_speed_m1 = MAX_SPEED
             target_speed_m2 = MAX_SPEED
-        elif key == curses.KEY_RIGHT:
+        elif key.lower() == 'd':
             target_speed_m1 = -MAX_SPEED
             target_speed_m2 = -MAX_SPEED
         else:
             target_speed_m1 = 0
             target_speed_m2 = 0
 
-        # Apply the same acceleration and deceleration logic to both motors
+        # Apply acceleration/deceleration
         for i, (current_speed, target_speed) in enumerate([(motor1_speed, target_speed_m1), (motor2_speed, target_speed_m2)]):
             if current_speed < target_speed:
                 current_speed = min(current_speed + ACCELERATION_STEP, target_speed)
@@ -63,14 +57,11 @@ def motor_control(stdscr):
         kit.motor2.throttle = motor2_speed
 
         # Display status
-        stdscr.clear()
-        stdscr.addstr("Use arrow keys to control motors. Press 'q' to exit.\n")
-        stdscr.addstr(f"Motor 1 Speed: {motor1_speed}\n")
-        stdscr.addstr(f"Motor 2 Speed: {motor2_speed}\n")
-        stdscr.refresh()
+        print(f"Motor 1 Speed: {motor1_speed}")
+        print(f"Motor 2 Speed: {motor2_speed}")
 
         # Exit on 'q' key
-        if key == ord('q'):
+        if key.lower() == 'q':
             break
 
         time.sleep(UPDATE_RATE)
@@ -78,6 +69,7 @@ def motor_control(stdscr):
     # Ensure motors fully stop when exiting
     kit.motor1.throttle = 0
     kit.motor2.throttle = 0
+    print("Motors stopped.")
 
 if __name__ == "__main__":
-    curses.wrapper(motor_control)
+    motor_control()
