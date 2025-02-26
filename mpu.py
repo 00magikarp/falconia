@@ -83,6 +83,7 @@ if __name__ == "__main__":
         #print(f"Accel: ax={ax:.2f}g, ay={ay:.2f}g, az={az:.2f}g")
         print(f"Gyro: gx={gx:.2f}°/s, gy={gy:.2f}°/s, gz={gz:.2f}°/s")
         print(f"Angle: Roll={roll:.2f}°, Pitch={pitch:.2f}°")
+        print(f"Angle mod 90: Roll={(roll)%90:.2f}, Pitch={(pitch)%90:.2f}")
         print("-" * 40)
         time.sleep(0.5)
 
