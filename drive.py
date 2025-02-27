@@ -3,40 +3,48 @@ import board
 import curses
 from adafruit_motorkit import MotorKit
 
-kit = MotorKit(i2c=board.I2C())
+from sensor import Sensor
 
-M1SPEED = 1.0
-M2SPEED = -M1SPEED
+class Drive(Sensor):
+    def __init__(self):
+        self.kit = MotorKit(i2c=board.I2C())
 
-def get_key(stdscr):
-    curses.cbreak()
-    stdscr.nodelay(True)
-    stdscr.keypad(True)
+        self.M1SPEED = 1.0
+        self.M2SPEED = -self.M1SPEED
+        
+    def start(self):
+        curses.wrapper(self.get_key)
 
-    while True:
-        key = stdscr.getch()
-        if key == ord('w'):
-            kit.motor1.throttle = M1SPEED
-            kit.motor2.throttle = M2SPEED
-        elif key == ord('s'):
-            kit.motor1.throttle = -M1SPEED
-            kit.motor2.throttle = -M2SPEED
-        elif key == ord('a'):
-            kit.motor1.throttle = -M1SPEED
-            kit.motor2.throttle = M2SPEED
-        elif key == ord('d'):
-            kit.motor1.throttle = M1SPEED
-            kit.motor2.throttle = -M2SPEED
-        elif key == ord('q'):
-            kit.motor1.throttle = 0
-            kit.motor2.throttle = 0
-            break
-        else:
-            kit.motor1.throttle = 0
-            kit.motor2.throttle = 0
+    def get_key(self, stdscr):
+        curses.cbreak()
+        stdscr.nodelay(True)
+        stdscr.keypad(True)
 
-        time.sleep(0.025)
+        while True:
+            key = stdscr.getch()
+            if key == ord('w'):
+                self.kit.motor1.throttle = self.M1SPEED
+                self.kit.motor2.throttle = self.M2SPEED
+            elif key == ord('s'):
+                self.kit.motor1.throttle = -self.M1SPEED
+                self.kit.motor2.throttle = -self.M2SPEED
+            elif key == ord('a'):
+                self.kit.motor1.throttle = -self.M1SPEED
+                self.kit.motor2.throttle = self.M2SPEED
+            elif key == ord('d'):
+                self.kit.motor1.throttle = self.M1SPEED
+                self.kit.motor2.throttle = -self.M2SPEED
+            elif key == ord('q'):
+                self.kit.motor1.throttle = 0
+                self.kit.motor2.throttle = 0
+                break
+            else:
+                self.kit.motor1.throttle = 0
+                self.kit.motor2.throttle = 0
+
+            time.sleep(0.025)
 
 if __name__ == "__main__":
-    curses.wrapper(get_key)
+    d = Drive()
+    d.start()
 
