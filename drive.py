@@ -6,12 +6,11 @@ from adafruit_motorkit import MotorKit
 from sensor import Sensor
 
 class Drive(Sensor):
-    def __init__(self, stop_event):
+    def __init__(self):
         self.kit = MotorKit(i2c=board.I2C())
-        self.stop_event = stop_event
 
         self.M1SPEED = 1.0
-        self.M2SPEED = -self.M1SPEED
+        self.M2SPEED = -self.M1SPEED # its backwards lmao
         
     def start(self):
         curses.wrapper(self.get_key)
@@ -21,7 +20,7 @@ class Drive(Sensor):
         stdscr.nodelay(True)
         stdscr.keypad(True)
 
-        while not self.stop_event_is_set():
+        while True: 
             key = stdscr.getch()
             if key == ord('w'):
                 self.kit.motor1.throttle = self.M1SPEED
@@ -46,8 +45,6 @@ class Drive(Sensor):
             time.sleep(0.025)
 
 if __name__ == "__main__":
-    import threading
-    stop_event = threading.Event()
-    d = Drive(stop_event)
+    d = Drive()
     d.start()
 

@@ -1,7 +1,6 @@
 import smbus
 import time
 import math
-import threading
 
 # MPU6050 Registers
 MPU6050_ADDR = 0x68
@@ -10,10 +9,9 @@ ACCEL_XOUT_H = 0x3B
 GYRO_XOUT_H = 0x43
 
 class MPU:
-    def __init__(self, stop_event):
+    def __init__(self):
         self.bus = smbus.SMBus(1)
         self.bus.write_byte_data(MPU6050_ADDR, PWR_MGMT_1, 0)  # Wake up MPU6050
-        self.stop_event = stop_event  # Store stop event
 
         # Noise thresholds
         self.ACCEL_THRESHOLD = 0.1
@@ -58,7 +56,7 @@ class MPU:
         pos_x = pos_y = pos_z = 0.0
         angle_x = angle_y = angle_z = 0.0
 
-        while not self.stop_event.is_set():  # Check stop event
+        while True:
             curr_time = time.time()
             dt = curr_time - prev_time
             prev_time = curr_time
@@ -86,16 +84,8 @@ class MPU:
 
         print("MPU6050 stopping...")
 
-def main():
-    stop_event = threading.Event()
-    mpu = MPU(stop_event)
-
-    try:
-        mpu.start()
-    except KeyboardInterrupt:
-        print("Stopping MPU6050...")
-        stop_event.set()
 
 if __name__ == "__main__":
-    main()
+    mpu = MPU()
+    mpu.start()
 

@@ -1,20 +1,16 @@
-import asyncio
 import time
 import board
 import adafruit_dht
 import sensor
 import pigpio
-import threading
 
 
 class DHT(sensor.Sensor):
-    def __init__(self, stop_event):
-        super().__init__()
+    def __init__(self):
         self.sensor = adafruit_dht.DHT11(board.D4, use_pulseio=False)
-        self.stop_event = stop_event  # Store stop event
 
-    async def start(self):
-        while not self.stop_event.is_set():  # Check stop event
+    def start(self):
+        while True:
             try:
                 self.sensor.measure()
                 temperature_c = self.sensor.temperature
@@ -27,21 +23,12 @@ class DHT(sensor.Sensor):
                 self.sensor.exit()
                 raise error
 
-            await asyncio.sleep(5.0)
+            time.sleep(0.5)
 
         print("DHT sensor stopping...")
-        self.sensor.exit()  # Ensure sensor cleanup
-
-def main() -> None:
-    stop_event = threading.Event()
-    d = DHT(stop_event)
-    
-    try:
-        asyncio.run(d.start())  # Start async loop
-    except KeyboardInterrupt:
-        print("Stopping DHT sensor...")
-        stop_event.set()
+        self.sensor.exit()
 
 if __name__ == "__main__":
-    main()
+    d = DHT()
+    d.start()
 

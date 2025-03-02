@@ -36,29 +36,20 @@ class Rotary(Sensor):
     def start(self):
         try:
             while True:
-                # Read the current state of the rotary encoder's CLK pin
                 self.CLK_state = GPIO.input(self.CLK_PIN)
 
-                # If the state of CLK is changed, then pulse occurred
-                # React to only the rising edge (from LOW to HIGH) to avoid double count
                 if self.CLK_state != self.prev_CLK_state and self.CLK_state == GPIO.HIGH:
-                    # If the DT state is HIGH, the encoder is rotating in counter-clockwise direction
-                    # Decrease the counter
                     if GPIO.input(self.DT_PIN) == GPIO.HIGH:
                         self.counter -= 1
                         direction = DIRECTION_CCW
                     else:
-                        # The encoder is rotating in clockwise direction => increase the counter
                         self.counter += 1
                         direction = DIRECTION_CW
-
-                    print("Rotary Encoder:: direction:", "CLOCKWISE" if direction == DIRECTION_CW else "ANTICLOCKWISE",
-                          "- count:", self.counter)
-
-                # Save last CLK state
+                    print(self.counter)
                 self.prev_CLK_state = self.CLK_state
         except KeyboardInterrupt:
-            GPIO.cleanup()  # Clean up GPIO on program exit
+            GPIO.cleanup()
+
 
 if __name__ == "__main__":
     r = Rotary()

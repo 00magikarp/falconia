@@ -5,10 +5,8 @@ import threading
 from sensor import Sensor
 
 class Camera(Sensor):
-    def __init__(self, stop_event):
-        super().__init__()
+    def __init__(self):
         self.app = Flask(__name__)
-        self.stop_event = stop_event  # Store stop event
 
         self.camera = cv2.VideoCapture("/dev/video0", cv2.CAP_V4L2)
         self.camera.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*'MJPG'))
@@ -22,7 +20,7 @@ class Camera(Sensor):
 
     def generate_frames(self):
         """Reads and serves frames from the camera, stopping when event is set."""
-        while not self.stop_event.is_set():
+        while True:
             success, frame = self.camera.read()
             if not success:
                 print("Error: Failed to capture frame")
@@ -32,21 +30,16 @@ class Camera(Sensor):
                    b'Content-Type: image/jpeg\r\n\r\n' + buffer.tobytes() + b'\r\n')
 
         print("Camera thread stopping...")
-        self.camera.release()  # Ensure camera is released
+        self.camera.release()
 
     def video_feed(self):
         return Response(self.generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
 
     def start(self):
-        self.app.run(host="0.0.0.0", port=8554, threaded=True)  # Flask should run in a separate thread
+        self.app.run(host="0.0.0.0", port=8554, threaded=True) 
+
 
 if __name__ == "__main__":
-    stop_event = threading.Event()
-    c = Camera(stop_event)
-    try:
-        c.start()
-    except KeyboardInterrupt:
-        print("Stopping Camera...")
-        stop_event.set()
-
+    c = Camera()
+    c.start()
 

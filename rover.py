@@ -12,11 +12,10 @@ class Rover:
         pass
 
     def main() -> None:
-        self.stop_event = threading.Event(self.stop_event)
-        Camera = camera.Camera(self.stop_event)
-        DHT = dht.DHT(self.stop_event)
-        Rotary = rotary.Rotary(self.stop_event)
-        Drive = drive.Drive(self.stop_event)
+        Camera = camera.Camera()
+        DHT = dht.DHT()
+        Rotary = rotary.Rotary()
+        Drive = drive.Drive()
 
         sensors: list[sensor.Sensor] = [
                 Camera,
@@ -35,7 +34,6 @@ class Rover:
                 time.sleep(0.05)
         except KeyboardInterrupt:
             print("Stopping robot!")
-            self.stop_event.set()
 
         for thread in threads:
             thread.join()
