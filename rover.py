@@ -2,7 +2,8 @@ import threading
 
 import drive
 import camera
-import dht
+# import dht
+import mpu
 import rotary
 import sensor
 
@@ -13,19 +14,21 @@ class Rover:
 
     def main() -> None:
         Camera = camera.Camera()
-        DHT = dht.DHT()
+        # DHT = dht.DHT()
         Rotary = rotary.Rotary()
+        MPU = mpu.MPU()
         Drive = drive.Drive()
 
         sensors: list[sensor.Sensor] = [
                 Camera,
                 # DHT,
                 Rotary,
+                MPU,
                 Drive
             ]
         threads = []
         for sensor in sensors:
-            thread = threading.Thread(target=sensor.start))
+            thread = threading.Thread(target=sensor.start)
             thread.start()
             threads.append(thread)
 

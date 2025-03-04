@@ -1,6 +1,7 @@
 flask==3.1.0
 opencv-python==4.11.0.86
 adafruit-circuitpython-dht==4.0.7
+adafruit-circuitpython-motorkit==1.6.16
 Adafruit-DHT==1.4.0
 RPi.GPIO==0.7.1
 gpiozero==2.0.1
